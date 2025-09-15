@@ -1,0 +1,47 @@
+#include <Wire.h>
+#include <hd44780.h>
+#include <hd44780ioClass/hd44780_I2Cexp.h>
+#include "DHT.h"
+
+#define DHTPIN 4
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
+hd44780_I2Cexp lcd;
+
+void setup() {
+
+  lcd.begin(16, 2);
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("ESP32 + DHT11");
+  delay(2000);
+  lcd.clear();
+
+
+  dht.begin();
+}
+
+void loop() {
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  if (isnan(h) || isnan(t)) {
+    lcd.setCursor(0, 0);
+    lcd.print("Loi cam bien!");
+    delay(2000);
+    return;
+  }
+
+  lcd.setCursor(0, 0);
+  lcd.print("Nhiet do: ");
+  lcd.print(t, 1);
+  lcd.print((char)223);
+  lcd.print("C   ");
+
+  lcd.setCursor(0, 1);
+  lcd.print("Do am: ");
+  lcd.print(h, 1);
+  lcd.print("%   ");
+  delay(2000);
+}
